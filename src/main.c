@@ -27,12 +27,11 @@ enum
   SOURCE_APPROX_NES = 0,
   SOURCE_APPROX_NES_ROTATED,
   /* 256 color palettes */
-  SOURCE_COMPOSITE_08_2X,
-  SOURCE_COMPOSITE_16_1X,
-  SOURCE_COMPOSITE_16_1X_ROTATED,
+  SOURCE_COMPOSITE_08,
+  SOURCE_COMPOSITE_16,
+  SOURCE_COMPOSITE_16_ROTATED,
   /* 1024 color palettes */
-  SOURCE_COMPOSITE_16_4X,
-  SOURCE_COMPOSITE_32_2X
+  SOURCE_COMPOSITE_32
 };
 
 /* the standard table step is 1 / (n + 2),  */
@@ -131,21 +130,20 @@ short int set_voltage_table_pointers()
     S_saturation_table = S_approx_nes_sat;
     S_table_length = 4;
   }
-  else if (G_source == SOURCE_COMPOSITE_08_2X)
+  else if (G_source == SOURCE_COMPOSITE_08)
   {
     S_luma_table = S_composite_08_lum;
     S_saturation_table = S_composite_08_sat;
     S_table_length = 8;
   }
-  else if ( (G_source == SOURCE_COMPOSITE_16_1X)          || 
-            (G_source == SOURCE_COMPOSITE_16_1X_ROTATED)  || 
-            (G_source == SOURCE_COMPOSITE_16_4X))
+  else if ( (G_source == SOURCE_COMPOSITE_16) || 
+            (G_source == SOURCE_COMPOSITE_16_ROTATED))
   {
     S_luma_table = S_composite_16_lum;
     S_saturation_table = S_composite_16_sat;
     S_table_length = 16;
   }
-  else if (G_source == SOURCE_COMPOSITE_32_2X)
+  else if (G_source == SOURCE_COMPOSITE_32)
   {
     S_luma_table = S_composite_32_lum;
     S_saturation_table = S_composite_32_sat;
@@ -296,25 +294,21 @@ short int generate_palette_composite()
   float phi;
 
   /* determine number of hues */
-  if ((G_source == SOURCE_COMPOSITE_16_1X) || 
-      (G_source == SOURCE_COMPOSITE_16_1X_ROTATED))
+  if ((G_source == SOURCE_COMPOSITE_16) || 
+      (G_source == SOURCE_COMPOSITE_16_ROTATED))
   {
     num_hues = 12;
   }
-  else if ( (G_source == SOURCE_COMPOSITE_08_2X) || 
-            (G_source == SOURCE_COMPOSITE_32_2X))
+  else if ( (G_source == SOURCE_COMPOSITE_08) || 
+            (G_source == SOURCE_COMPOSITE_32))
   {
     num_hues = 24;
-  }
-  else if (G_source == SOURCE_COMPOSITE_16_4X)
-  {
-    num_hues = 48;
   }
   else
     num_hues = 12;
 
   /* determine phase offset */
-  if (G_source == SOURCE_COMPOSITE_16_1X_ROTATED)
+  if (G_source == SOURCE_COMPOSITE_16_ROTATED)
   {
     phi = PI / 12.0f; /* 15 degrees */
   }
@@ -407,16 +401,14 @@ short int write_gpl_file(char* filename)
     fprintf(fp_out, "Name: Approximate NES\n");
   else if (G_source == SOURCE_APPROX_NES_ROTATED)
     fprintf(fp_out, "Name: Approximate NES Rotated\n");
-  else if (G_source == SOURCE_COMPOSITE_08_2X)
-    fprintf(fp_out, "Name: Composite 08 2X\n");
-  else if (G_source == SOURCE_COMPOSITE_16_1X)
-    fprintf(fp_out, "Name: Composite 16 1X\n");
-  else if (G_source == SOURCE_COMPOSITE_16_1X_ROTATED)
-    fprintf(fp_out, "Name: Composite 16 1X Rotated\n");
-  else if (G_source == SOURCE_COMPOSITE_16_4X)
-    fprintf(fp_out, "Name: Composite 16 4X\n");
-  else if (G_source == SOURCE_COMPOSITE_32_2X)
-    fprintf(fp_out, "Name: Composite 32 2X\n");
+  else if (G_source == SOURCE_COMPOSITE_08)
+    fprintf(fp_out, "Name: Composite 08\n");
+  else if (G_source == SOURCE_COMPOSITE_16)
+    fprintf(fp_out, "Name: Composite 16\n");
+  else if (G_source == SOURCE_COMPOSITE_16_ROTATED)
+    fprintf(fp_out, "Name: Composite 16 Rotated\n");
+  else if (G_source == SOURCE_COMPOSITE_32)
+    fprintf(fp_out, "Name: Composite 32\n");
 
   fprintf(fp_out, "Columns: 16\n\n");
 
@@ -696,16 +688,14 @@ int main(int argc, char *argv[])
         G_source = SOURCE_APPROX_NES;
       else if (!strcmp("approx_nes_rotated", argv[i]))
         G_source = SOURCE_APPROX_NES_ROTATED;
-      else if (!strcmp("composite_08_2x", argv[i]))
-        G_source = SOURCE_COMPOSITE_08_2X;
-      else if (!strcmp("composite_16_1x", argv[i]))
-        G_source = SOURCE_COMPOSITE_16_1X;
-      else if (!strcmp("composite_16_1x_rotated", argv[i]))
-        G_source = SOURCE_COMPOSITE_16_1X_ROTATED;
-      else if (!strcmp("composite_16_4x", argv[i]))
-        G_source = SOURCE_COMPOSITE_16_4X;
-      else if (!strcmp("composite_32_2x", argv[i]))
-        G_source = SOURCE_COMPOSITE_32_2X;
+      else if (!strcmp("composite_08", argv[i]))
+        G_source = SOURCE_COMPOSITE_08;
+      else if (!strcmp("composite_16", argv[i]))
+        G_source = SOURCE_COMPOSITE_16;
+      else if (!strcmp("composite_16_rotated", argv[i]))
+        G_source = SOURCE_COMPOSITE_16_ROTATED;
+      else if (!strcmp("composite_32", argv[i]))
+        G_source = SOURCE_COMPOSITE_32;
       else
       {
         printf("Unknown source %s. Exiting...\n", argv[i]);
@@ -726,16 +716,14 @@ int main(int argc, char *argv[])
     strncpy(output_base_filename, "approx_nes", 24);
   else if (G_source == SOURCE_APPROX_NES_ROTATED)
     strncpy(output_base_filename, "approx_nes_rotated", 24);
-  else if (G_source == SOURCE_COMPOSITE_08_2X)
-    strncpy(output_base_filename, "composite_08_2x", 24);
-  else if (G_source == SOURCE_COMPOSITE_16_1X)
-    strncpy(output_base_filename, "composite_16_1x", 24);
-  else if (G_source == SOURCE_COMPOSITE_16_1X_ROTATED)
-    strncpy(output_base_filename, "composite_16_1x_rotated", 24);
-  else if (G_source == SOURCE_COMPOSITE_16_4X)
-    strncpy(output_base_filename, "composite_16_4x", 24);
-  else if (G_source == SOURCE_COMPOSITE_32_2X)
-    strncpy(output_base_filename, "composite_32_2x", 24);
+  else if (G_source == SOURCE_COMPOSITE_08)
+    strncpy(output_base_filename, "composite_08", 24);
+  else if (G_source == SOURCE_COMPOSITE_16)
+    strncpy(output_base_filename, "composite_16", 24);
+  else if (G_source == SOURCE_COMPOSITE_16_ROTATED)
+    strncpy(output_base_filename, "composite_16_rotated", 24);
+  else if (G_source == SOURCE_COMPOSITE_32)
+    strncpy(output_base_filename, "composite_32", 24);
 
   strncpy(output_gpl_filename, output_base_filename, 256);
   strncpy(output_tga_filename, output_base_filename, 256);
@@ -749,14 +737,13 @@ int main(int argc, char *argv[])
   {
     G_max_colors = 64;
   }
-  else if ( (G_source == SOURCE_COMPOSITE_08_2X) || 
-            (G_source == SOURCE_COMPOSITE_16_1X) || 
-            (G_source == SOURCE_COMPOSITE_16_1X_ROTATED))
+  else if ( (G_source == SOURCE_COMPOSITE_08) || 
+            (G_source == SOURCE_COMPOSITE_16) || 
+            (G_source == SOURCE_COMPOSITE_16_ROTATED))
   {
     G_max_colors = 256;
   }
-  else if ( (G_source == SOURCE_COMPOSITE_16_4X) || 
-            (G_source == SOURCE_COMPOSITE_32_2X))
+  else if (G_source == SOURCE_COMPOSITE_32)
   {
     G_max_colors = 1024;
   }
@@ -791,11 +778,10 @@ int main(int argc, char *argv[])
       return 0;
     }
   }
-  else if ( (G_source == SOURCE_COMPOSITE_08_2X)          || 
-            (G_source == SOURCE_COMPOSITE_16_1X)          || 
-            (G_source == SOURCE_COMPOSITE_16_1X_ROTATED)  || 
-            (G_source == SOURCE_COMPOSITE_16_4X)          || 
-            (G_source == SOURCE_COMPOSITE_32_2X))
+  else if ( (G_source == SOURCE_COMPOSITE_08)          || 
+            (G_source == SOURCE_COMPOSITE_16)          || 
+            (G_source == SOURCE_COMPOSITE_16_ROTATED)  || 
+            (G_source == SOURCE_COMPOSITE_32))
   {
     if (generate_palette_composite())
     {
